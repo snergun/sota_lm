@@ -1,0 +1,103 @@
+job is starting on cn096.delta.ncsa.illinois.edu
+
+--------------------------------------------------
+
+PennTreeBank
+
+Individual valid ppl of models
+AWD-LSTM-DOC.txt: 54.12
+AWD-LSTM-MOS.txt: 56.04
+EGRU.txt: 61.21
+FWM-RNN.txt: 58.49
+KneserNey-5gram.txt: 148.41
+QRNN.txt: 60.38
+Transformer-XL.txt: 57.93
+
+Individual test ppl of models
+AWD-LSTM-DOC.txt: 52.38
+AWD-LSTM-MOS.txt: 54.0
+EGRU.txt: 57.18
+FWM-RNN.txt: 56.45
+KneserNey-5gram.txt: 141.46
+QRNN.txt: 58.43
+Transformer-XL.txt: 55.41
+
+Validation Perplexity:  48.92426904131176
+Test Perplexity:  47.311834641995134
+
+Name of files with weights
+AWD-LSTM-DOC: 0.34
+AWD-LSTM-MOS: 0.19
+EGRU: 0.15
+FWM-RNN: 0.1
+KneserNey-5gram: 0.01
+QRNN: 0.0
+Transformer-XL: 0.2
+
+--------------------------------------------------
+
+WikiText-2
+
+Individual valid ppl of models
+AWD-LSTM-DOC.txt: 60.27
+AWD-LSTM-MOS.txt: 63.92
+EGRU.txt: 69.4
+FWM-RNN.txt: 69.51
+KneserNey-5gram.txt: 233.93
+QRNN.txt: 69.23
+Transformer-XL.txt: 67.41
+
+Individual test ppl of models
+AWD-LSTM-DOC.txt: 58.01
+AWD-LSTM-MOS.txt: 61.54
+EGRU.txt: 67.2
+FWM-RNN.txt: 66.49
+KneserNey-5gram.txt: 219.27
+QRNN.txt: 66.61
+Transformer-XL.txt: 64.85
+
+Validation Perplexity:  55.40148947452961
+Test Perplexity:  53.73362364890458
+
+Name of files with weights
+AWD-LSTM-DOC: 0.41
+AWD-LSTM-MOS: 0.17
+EGRU: 0.22
+FWM-RNN: 0.02
+KneserNey-5gram: 0.01
+QRNN: 0.01
+Transformer-XL: 0.16
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+Validation Perplexity:  13.118807858114495
+Test Perplexity:  13.294113034700297
+
+Name of files with weights
+AdaptiveInputs: 0.03
+DELIGHT: 0.0
+GCN: 0.0
+KNNLM: 0.53
+MEGA: 0.29
+S4: 0.06
+ShortFormer: 0.09

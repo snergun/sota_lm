@@ -1,0 +1,10 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+Traceback (most recent call last):
+  File "/u/eergun/sota_lm/main.py", line 47, in <module>
+    val_probabilities = np.vstack(
+  File "<__array_function__ internals>", line 200, in vstack
+  File "/sw/external/python/anaconda3_cpu/lib/python3.9/site-packages/numpy/core/shape_base.py", line 296, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+  File "<__array_function__ internals>", line 200, in concatenate
+ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 217645 and the array at index 1 has size 217646
+srun: error: cn094: task 0: Exited with exit code 1

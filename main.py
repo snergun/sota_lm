@@ -3,9 +3,14 @@ import pandas as pd
 import numpy as np
 import torch
 import os
-
+import argparse
 from utils import combine_prob_text, calculate_sequence_loss, optimise_ensemble_weights
-
+def parse_args():
+    parser = argparse.ArgumentParser(description="Ensemble model for language modeling")
+    parser.add_argument("--dataset", type=str, default="WikiText-103", help="Dataset name")
+    parser.add_argument("--models", nargs='+', default=[], help="List of model names to use for ensemble")
+    parser.add_argument("--models-all-but", nargs='+', default=[], help="List of model names to exclude from ensemble")
+    return parser.parse_args()
 
 def plot_cumulative_state(df_line: pd.DataFrame, df_pie: pd.DataFrame, outfile: str, dataset_name: str):
     fig_line_chart = px.line(
@@ -27,11 +32,15 @@ def plot_cumulative_state(df_line: pd.DataFrame, df_pie: pd.DataFrame, outfile: 
         f.write(fig_pie_chart.to_html(full_html=False, include_plotlyjs='cdn',  default_height="70%", default_width="70%"))
 
 if __name__ == "__main__":
+    args = parse_args()
     if os.path.exists("index.html"):
         os.remove("index.html")
     np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 
-    rel_paths = ['PennTreeBank', 'WikiText-2', 'WikiText-103']
+    rel_paths = args.dataset
+    if isinstance(rel_paths, str):
+        rel_paths = [rel_paths]
+
     for path in rel_paths:
         print('\n' + '-' * 50)
         print('\n' + path)
@@ -39,6 +48,14 @@ if __name__ == "__main__":
         path = os.path.relpath(path)
         val_files = sorted(os.listdir(os.path.join(path, 'valid')))
         test_files = sorted(os.listdir(os.path.join(path, 'test')))
+
+        #Take only models specified in args if any
+        if len(args.models) > 0:
+            val_files = [f for f in val_files if f.replace('.txt', '') in args.models]
+            test_files = [f for f in test_files if f.replace('.txt', '') in args.models]
+        if len(args.models_all_but) > 0:
+            val_files = [f for f in val_files if not f.replace('.txt', '') in args.models_all_but]
+            test_files = [f for f in test_files if not f.replace('.txt', '') in args.models_all_but]
 
         val_files_parsed = [f.replace('.txt', '') for f in val_files]
         test_files_parsed = [f.replace('.txt', '') for f in test_files]

@@ -1,0 +1,27 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+job is starting on gpua029.delta.ncsa.illinois.edu
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+KNNLM_v2.txt: 15.63
+MEGA.txt: 17.17
+my_adt.txt: 18.81
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+KNNLM_v2.txt: 15.47
+MEGA.txt: 18.09
+my_adt.txt: 19.55
+
+Validation Perplexity:  13.638021817394577
+Test Perplexity:  13.620596293711861
+
+Name of files with weights
+AdaptiveInputs: 0.0
+KNNLM_v2: 0.45
+MEGA: 0.43
+my_adt: 0.12
