@@ -1,0 +1,239 @@
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+my_adt.txt: 18.81
+pos_adaptive.txt: 20.8
+
+Individual test ppl of models
+my_adt.txt: 19.55
+pos_adaptive.txt: 21.51
+
+Validation Perplexity:  17.683442474010345
+Test Perplexity:  18.290345935418753
+
+Name of files with weights
+my_adt: 0.64
+pos_adaptive: 0.36
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+my_adt.txt: 18.81
+pos_adaptive.txt: 20.8
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+my_adt.txt: 19.55
+pos_adaptive.txt: 21.51
+
+Validation Perplexity:  16.386033948550214
+Test Perplexity:  16.944384000354404
+
+Name of files with weights
+AdaptiveInputs: 0.45
+my_adt: 0.35
+pos_adaptive: 0.19
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+KNNLM_v2.txt: 15.63
+my_adt.txt: 18.81
+pos_adaptive.txt: 20.8
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+KNNLM_v2.txt: 15.47
+my_adt.txt: 19.55
+pos_adaptive.txt: 21.51
+
+Validation Perplexity:  14.607991375359354
+Test Perplexity:  14.505159601255627
+
+Name of files with weights
+AdaptiveInputs: 0.0
+KNNLM_v2: 0.61
+my_adt: 0.24
+pos_adaptive: 0.15
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+ADTPOS.txt: 18.01
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+my_adt.txt: 18.81
+pos_adaptive.txt: 20.8
+
+Individual test ppl of models
+ADTPOS.txt: 18.86
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+my_adt.txt: 19.55
+pos_adaptive.txt: 21.51
+
+Validation Perplexity:  13.107576102790073
+Test Perplexity:  13.283726711462187
+
+Name of files with weights
+ADTPOS: 0.02
+AdaptiveInputs: 0.01
+DELIGHT: 0.0
+GCN: 0.0
+KNNLM: 0.52
+MEGA: 0.29
+S4: 0.06
+ShortFormer: 0.09
+my_adt: 0.0
+pos_adaptive: 0.01
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+ADTPOS.txt: 18.01
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNNLM_v2.txt: 15.63
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+my_adt.txt: 18.81
+pos_adaptive.txt: 20.8
+
+Individual test ppl of models
+ADTPOS.txt: 18.86
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNNLM_v2.txt: 15.47
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+my_adt.txt: 19.55
+pos_adaptive.txt: 21.51
+
+Validation Perplexity:  13.392077604805241
+Test Perplexity:  13.38495303990715
+
+Name of files with weights
+ADTPOS: 0.0
+AdaptiveInputs: 0.0
+DELIGHT: 0.0
+GCN: 0.0
+KNNLM_v2: 0.37
+MEGA: 0.34
+S4: 0.09
+ShortFormer: 0.14
+my_adt: 0.03
+pos_adaptive: 0.03
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+ADTPOS.txt: 18.01
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNNLM.txt: 14.39
+KNNLM_v2.txt: 15.63
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+my_adt.txt: 18.81
+pos_adaptive.txt: 20.8
+
+Individual test ppl of models
+ADTPOS.txt: 18.86
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNNLM.txt: 14.54
+KNNLM_v2.txt: 15.47
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+my_adt.txt: 19.55
+pos_adaptive.txt: 21.51
+
+Validation Perplexity:  12.909627069234253
+Test Perplexity:  12.952234478993741
+
+Name of files with weights
+ADTPOS: 0.0
+AdaptiveInputs: 0.0
+DELIGHT: 0.0
+GCN: 0.0
+KNNLM: 0.4
+KNNLM_v2: 0.2
+MEGA: 0.27
+S4: 0.05
+ShortFormer: 0.07
+my_adt: 0.0
+pos_adaptive: 0.01
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+MEGA.txt: 17.17
+my_adt.txt: 18.81
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+MEGA.txt: 18.09
+my_adt.txt: 19.55
+
+Validation Perplexity:  14.870510036183997
+Test Perplexity:  15.393670514003523
+
+Name of files with weights
+AdaptiveInputs: 0.28
+MEGA: 0.53
+my_adt: 0.19
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+MEGA.txt: 17.17
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+MEGA.txt: 18.09
+
+Validation Perplexity:  15.131677756097483
+Test Perplexity:  15.68737031949665
+
+Name of files with weights
+AdaptiveInputs: 0.4
+MEGA: 0.6

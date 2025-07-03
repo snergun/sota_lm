@@ -15,6 +15,6 @@ module reset # drop modules and explicitly load the ones needed
              # $WORK and $SCRATCH are now set
 module load anaconda3_gpu  # ... or any appropriate modules
 echo "job is starting on `hostname`"
-srun python main.py --models AdaptiveInputs KNNLM_v2 MEGA my_adt
+srun python main.py --models AdaptiveInputs MEGA my_adt KNNLM
 
 
