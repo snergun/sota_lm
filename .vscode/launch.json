@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Weigh Ensemble By POS",
+            "type": "debugpy",
+            "python": "/opt/conda/bin/python",
+            "request": "launch",
+            "program": "weigh_by_pos.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--models-all-but", "ADTPOS", "my_adt", "KNNLM_v2", "pos_adaptive",
+                "--weigh-by-pos", "xpos",
+                "--pos-prob-path", "../pos_lm_v2/checkpoints/sweep/0501_232107/results/",
+                "--train-with-predictions",
+
+            ]
+        },
+    ]
+}

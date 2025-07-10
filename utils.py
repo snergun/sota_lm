@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import os
 from tabulate import tabulate
+import torch.nn.functional as F
 
 class Perplexity_loss(torch.nn.Module):
     def __init__(self, num_models: int):
@@ -24,22 +25,38 @@ class Perplexity_loss(torch.nn.Module):
 class Perplexity_loss_per_POS(torch.nn.Module):
     def __init__(self, num_models: int, num_pos: int):
         """
-        We instantiate weights of the ensemble model.
+        Instantiate weights of the ensemble model.
         """
         super().__init__()
-        self.weights_by_pos = torch.nn.Parameter(torch.ones((num_pos, num_models )))
+        self.weights = torch.nn.Parameter(torch.ones((num_models, num_pos)))
 
-    def forward(self, probabilities, pos_tokens):
+    def forward(self, probabilities, pos_tokens=None, pos_predictions=None):
         """
-        We calculate directly the cross entropy loss used in Perplexity.
+        Compute cross-entropy loss used in perplexity, using vectorized operations.
+        
+        Arguments:
+        - probabilities: Tensor of shape (num_models, num_tokens)
+        - pos_tokens: LongTensor of shape (num_tokens,) with POS tag IDs (0 <= ID < num_pos)
         """
-        weights_softmax = torch.softmax(self.weights_by_pos, dim=1)
-        weighted_probs = torch.zeros_like(probabilities)
-        for pos_id in range(weights_softmax.shape[0]):
-            pos_indices = np.isin(pos_tokens, pos_id)
-            weighted_probs[:, pos_indices] = weights_softmax[pos_id] * probabilities[:, pos_indices]
-        weighted_probs = torch.sum(weighted_probs, dim=0)
-        loss = -1 * torch.mean(torch.log(weighted_probs))
+        assert pos_tokens is not None or pos_predictions is not None, "Either pos_tokens or pos_predictions must be provided"
+        # Apply softmax to weights over the model axis
+        weights_softmax = torch.softmax(self.weights, dim=0)  # shape: (num_models, num_pos)
+
+        # Gather the softmax weights corresponding to the POS of each token
+        # pos_tokens: (num_tokens,) → weights_selected: (num_models, num_tokens)
+        if pos_predictions is None:
+            weights_selected = weights_softmax.gather(dim=1, index=pos_tokens.unsqueeze(0).expand(probabilities.size(0), -1))
+        else:
+            # pos_predictions: (num_tokens, num_pos) → (num_pos, num_tokens)
+            pos_predictions_t = pos_predictions.t()
+            # Compute weighted sum of weights by predicted POS probabilities
+            # Resulting shape: (num_models, num_tokens)
+            weights_selected = torch.matmul(weights_softmax, pos_predictions_t)
+        # Compute weighted probabilities (elementwise multiply and sum across models)
+        weighted_probs = torch.sum(probabilities * weights_selected, dim=0)  # shape: (num_tokens,)
+
+        # Compute negative log-likelihood loss (mean over tokens)
+        loss = -torch.mean(torch.log(weighted_probs + 1e-12))  # add epsilon to avoid log(0)
         return loss
 
 def optimise_ensemble_weights(probabilities: np.ndarray, num_steps: int = 5000, lr: float=0.05):
@@ -63,7 +80,7 @@ def optimise_ensemble_weights(probabilities: np.ndarray, num_steps: int = 5000, 
         if t % 100 == 0:
             ppl = torch.exp(loss)
             scaled_weights = torch.softmax(model.weights, dim=0).detach().numpy()[:, 0]
-            #print('Loss:', loss.item(), 'Perplexity:', ppl.item(), 'Weights:', scaled_weights)
+            # print('Loss:', loss.item(), 'Perplexity:', ppl.item(), 'Weights:', scaled_weights)
 
     return scaled_weights
 
@@ -109,24 +126,37 @@ def calculate_sequence_loss_per_pos(x, pos_tokens, pos_dict):
         pos_losses[pos_word] = (loss, ppl)
     return pos_losses
 
-def optimize_ensemble_weights_by_pos(probabilities, pos_tokens, pos_dict):
+def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, num_steps: int = 500, pos_tokens = None, pos_predictions=None, train_val_split=None):
+    """    
+    Find optimal linear weights for the ensemble model given the word probabilities for each model.
     """
-    Optimize ensemble weights by POS tags.
-    :param probabilities: array of probabilities for each model
-    :param pos_tokens: list of POS tokens
-    :param pos_dict: dictionary mapping POS tags to indices
-    :param default_weight: default weight for the ensemble
-    :return: dictionary with POS tags as keys and their corresponding weights
-    """
-    weights_by_pos = {}
-    for pos_id in range(len(pos_dict)):
-        pos_word = pos_dict.symbols[pos_id]
-        pos_indices = np.isin(pos_tokens, pos_id)
-        if np.sum(pos_indices) == 0:
-            continue
-        pos_probs = probabilities[:,pos_indices]
-        weights_by_pos[pos_word] = optimise_ensemble_weights(pos_probs, num_steps=100)    
-    return weights_by_pos
+    probabilities = torch.from_numpy(probabilities)
+    pos_tokens = torch.tensor(pos_tokens, dtype=torch.long) if pos_tokens is not None else None
+    model = Perplexity_loss_per_POS(probabilities.shape[0], len(pos_dict))
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    if train_val_split is not None:
+        print(f"Using first {train_val_split*100}% of data for training, rest for validation")
+    cut_index = int(probabilities.shape[1] * train_val_split) if train_val_split is not None else probabilities.shape[1]
+    scaled_weights = None
+    for t in range(num_steps):
+        # Forward pass
+        loss = model(probabilities[:,:cut_index], pos_tokens, pos_predictions[:cut_index] if pos_predictions is not None else None)
+        # Zero gradients, perform a backward pass, and update the weights.
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if t % 100 == 0:
+            ppl = torch.exp(loss)
+            scaled_weights = torch.softmax(model.weights, dim=0).detach().numpy()
+            if train_val_split is not None:
+                val_loss = model(probabilities[:,cut_index:], pos_tokens, pos_predictions[cut_index:] if pos_predictions is not None else None)
+                val_ppl = torch.exp(val_loss)
+                print(f'Step {t}: Train Loss: {loss.item():.4f}, Train Perplexity: {ppl.item():.4f} | Val Loss: {val_loss.item():.4f}, Val Perplexity: {val_ppl.item():.4f}')
+            else:
+                print('Loss:', loss.item(), 'Perplexity:', ppl.item())
+
+    return model, scaled_weights
 
 def tabulate_data(table, model_names, emphasize=None):
     headers = ["POS"] + model_names
@@ -165,6 +195,8 @@ def weigh_by_pos(probs, pos_tokens, pos_dict, weights_by_pos):
         weighted_probs = (weights[:, np.newaxis] * pos_probs).sum(axis=0)
         loss += np.sum(-np.log(weighted_probs))
     return loss / probs.shape[1]  # Average loss over all tokens
+
+
 #
 # if __name__ == '__main__':
 #     np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
