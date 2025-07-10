@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import os
+from tabulate import tabulate
 
 class Perplexity_loss(torch.nn.Module):
     def __init__(self, num_models: int):
@@ -20,6 +21,26 @@ class Perplexity_loss(torch.nn.Module):
         loss = -1 * torch.mean(torch.log(lin_comb_sum))
         return loss
 
+class Perplexity_loss_per_POS(torch.nn.Module):
+    def __init__(self, num_models: int, num_pos: int):
+        """
+        We instantiate weights of the ensemble model.
+        """
+        super().__init__()
+        self.weights_by_pos = torch.nn.Parameter(torch.ones((num_pos, num_models )))
+
+    def forward(self, probabilities, pos_tokens):
+        """
+        We calculate directly the cross entropy loss used in Perplexity.
+        """
+        weights_softmax = torch.softmax(self.weights_by_pos, dim=1)
+        weighted_probs = torch.zeros_like(probabilities)
+        for pos_id in range(weights_softmax.shape[0]):
+            pos_indices = np.isin(pos_tokens, pos_id)
+            weighted_probs[:, pos_indices] = weights_softmax[pos_id] * probabilities[:, pos_indices]
+        weighted_probs = torch.sum(weighted_probs, dim=0)
+        loss = -1 * torch.mean(torch.log(weighted_probs))
+        return loss
 
 def optimise_ensemble_weights(probabilities: np.ndarray, num_steps: int = 5000, lr: float=0.05):
     """
@@ -69,6 +90,81 @@ def calculate_sequence_loss(x):
     ppl = np.exp(L)
     return L, ppl
 
+def calculate_sequence_loss_per_pos(x, pos_tokens, pos_dict):
+    """
+    Calculate the sequence loss for each POS tag.
+    :param x: predicted probabilities
+    :param pos_tokens: list of POS tokens
+    :param pos_dict: dictionary mapping POS tags to indices
+    :return: dictionary with POS tags as keys and their corresponding losses
+    """
+    pos_losses = {}
+    for pos_id in range(len(pos_dict)):
+        pos_word = pos_dict.symbols[pos_id]
+        pos_indices = np.isin(pos_tokens, pos_id)
+        if np.sum(pos_indices) == 0:
+            continue
+        pos_probs = x[pos_indices]
+        loss, ppl = calculate_sequence_loss(pos_probs)
+        pos_losses[pos_word] = (loss, ppl)
+    return pos_losses
+
+def optimize_ensemble_weights_by_pos(probabilities, pos_tokens, pos_dict):
+    """
+    Optimize ensemble weights by POS tags.
+    :param probabilities: array of probabilities for each model
+    :param pos_tokens: list of POS tokens
+    :param pos_dict: dictionary mapping POS tags to indices
+    :param default_weight: default weight for the ensemble
+    :return: dictionary with POS tags as keys and their corresponding weights
+    """
+    weights_by_pos = {}
+    for pos_id in range(len(pos_dict)):
+        pos_word = pos_dict.symbols[pos_id]
+        pos_indices = np.isin(pos_tokens, pos_id)
+        if np.sum(pos_indices) == 0:
+            continue
+        pos_probs = probabilities[:,pos_indices]
+        weights_by_pos[pos_word] = optimise_ensemble_weights(pos_probs, num_steps=100)    
+    return weights_by_pos
+
+def tabulate_data(table, model_names, emphasize=None):
+    headers = ["POS"] + model_names
+    table_data = []
+    for pos in sorted(table.keys()):
+        row = [pos]
+        data = table.get(pos, None)
+        if data is None:
+            continue
+        # Find min loss value (ignoring missing)
+        emph_data = None
+        if emphasize:
+            emph_data = min(data.values()) if emphasize == "min" else max(data.values())
+
+        for model in model_names:
+            value = data.get(model, None)
+            if value is None:
+                row.append("NA")
+            elif value == emph_data:
+                # Emphasize lowest loss — bold or asterisk-style depending on output
+                row.append(f"*{value:.2f}*")  # or f"**{loss:.2f}**" for markdown, or ANSI color if supported
+            else:
+                row.append(f"{value:.2f}")
+        table_data.append(row)
+    print(tabulate(table_data, headers=headers, tablefmt='grid'))
+
+def weigh_by_pos(probs, pos_tokens, pos_dict, weights_by_pos):
+    loss = 0
+    for pos_id in range(len(pos_dict)):
+        pos_word = pos_dict.symbols[pos_id]
+        pos_indices = np.isin(pos_tokens, pos_id)
+        if np.sum(pos_indices) == 0:
+            continue
+        pos_probs = probs[:,pos_indices]
+        weights = weights_by_pos.get(pos_word, None)
+        weighted_probs = (weights[:, np.newaxis] * pos_probs).sum(axis=0)
+        loss += np.sum(-np.log(weighted_probs))
+    return loss / probs.shape[1]  # Average loss over all tokens
 #
 # if __name__ == '__main__':
 #     np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
