@@ -237,3 +237,37 @@ Test Perplexity:  15.68737031949665
 Name of files with weights
 AdaptiveInputs: 0.4
 MEGA: 0.6
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+Validation Perplexity:  13.118807794211303
+Test Perplexity:  13.294112978215514
+
+Name of files with weights
+AdaptiveInputs: 0.03
+DELIGHT: 0.0
+GCN: 0.0
+KNNLM: 0.53
+MEGA: 0.29
+S4: 0.06
+ShortFormer: 0.09

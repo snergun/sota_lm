@@ -126,7 +126,7 @@ def calculate_sequence_loss_per_pos(x, pos_tokens, pos_dict):
         pos_losses[pos_word] = (loss, ppl)
     return pos_losses
 
-def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, num_steps: int = 500, pos_tokens = None, pos_predictions=None, train_val_split=None):
+def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, num_steps: int = 5000, pos_tokens = None, pos_predictions=None, train_val_split=None):
     """    
     Find optimal linear weights for the ensemble model given the word probabilities for each model.
     """
