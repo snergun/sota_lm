@@ -8,6 +8,7 @@ from utils import *
 from pos_lm.data.dictionary import Dictionary
 from pos_lm.data.utils import load_tokens_from_lines
 from tabulate import tabulate
+from pos_lm.utils import find_optimal_weights
 import math
 
 def parse_args():
@@ -16,7 +17,7 @@ def parse_args():
     parser.add_argument("--models", nargs='+', default=[], help="List of model names to use for ensemble")
     parser.add_argument("--models-all-but", nargs='+', default=[], help="List of model names to exclude from ensemble")
     parser.add_argument("--weigh-by-pos", type=str, default=None, choices=["xpos", "upos"], help="Use POS tags to weigh the models")
-    parser.add_argument("--pos-prob-path", type=str, default=None, help="Path to the POS probabilities")
+    parser.add_argument("--pos-prob-path", type=str, nargs='+', default=[], help="Path to the POS probabilities")
     parser.add_argument("--train-with-predictions", action='store_true', help="Train with predicted POS tags instead of gold POS tags")
     parser.add_argument("--train-val-split", type=float, default=None, help="Fraction of data to use for training when optimizing weights by POS tags")
     return parser.parse_args()
@@ -55,15 +56,23 @@ def load_pos_predictions(num_pos, pos_prob_path: str = None):
     dataset_sizes = {
     "validation": 217646,  # Example size for validation set
     "test": 245569         # Example size for test set
-}
+    }
+    pos_predictions = {}
+    # Load pos predictions
     if pos_prob_path is not None:
-        # Load pos predictions
-        pos_predictions = {split: 
-            torch.from_numpy(
-                np.memmap(f"{pos_prob_path}/{split}_full_prob.npy", shape=(dataset_sizes[split], num_pos), dtype=np.float32)
-                ).exp()
-                for split in ["validation", "test"]
-            }
+        for split in ["validation", "test"]:
+            # Check if pos prob is saved as {split}_full_prob (POS model) or {split}_pos_prob (LM model)
+            if os.path.exists(f"{pos_prob_path}/{split}_pos_prob.npy"):
+                file_name = f"{split}_pos_prob.npy"
+            elif os.path.exists(f"{pos_prob_path}/{split}_full_prob.npy"):
+                file_name = f"{split}_full_prob.npy"
+            else:
+                raise FileNotFoundError(f"POS probability file not found in {pos_prob_path} for {split} split.")
+            pos_predictions[split] = torch.from_numpy(
+                    np.memmap(os.path.join(pos_prob_path, file_name), shape=(dataset_sizes[split], num_pos), dtype=np.float32)
+                    )
+            if file_name.endswith("full_prob.npy"):
+                pos_predictions[split] = pos_predictions[split].exp()
     return pos_predictions
 
 def load_model_probabilities(args, path):
@@ -103,6 +112,18 @@ def load_model_probabilities(args, path):
 
     return val_files, val_probabilities, test_files, test_probabilities, test_los_individual, val_files_parsed, test_files_parsed
 
+def find_optimal_average(probs):
+    weights, _ = find_optimal_weights(*[probs[i]["validation"] for i in range(len(probs))])
+    average_probs = {split: sum(weights[i] * probs[i][split] for i in range(len(probs)))
+                            for split in ["validation", "test"]}
+    for split in ["validation", "test"]:
+        for i, prob in enumerate(probs):
+            print(f"Model {i} {split} PPL: ", np.exp(-np.mean(np.log(prob[split])))) 
+        print(f"Weights: ", weights)
+        print(f"Ensembled {split} PPL: ", np.exp(-np.mean(np.log(average_probs[split]))))
+
+    return average_probs
+
 if __name__ == "__main__":
     args = parse_args()
     if os.path.exists("index.html"):
@@ -118,7 +139,19 @@ if __name__ == "__main__":
         # Load POS tags and dictionary
         pos_dict, pos_tokens = load_pos_tags(args.weigh_by_pos)
         # Load POS predictions if path is provided
-        pos_predictions = load_pos_predictions(len(pos_dict), args.pos_prob_path)
+        pos_predictions = []
+        for pos_prob_path in args.pos_prob_path:
+            print(f"Loading POS predictions from {pos_prob_path}")
+            pos_predictions.append(load_pos_predictions(len(pos_dict), pos_prob_path))
+        # Use the optimal weighted average if multiple POS prediction paths are provided
+        if len(pos_predictions) > 0:
+            print("Finding optimal weights for POS predictions")
+            average_pos_predictions = {split:
+                                       sum(pos_predictions[i][split] for i in range(len(pos_predictions))) / len(pos_predictions)
+                                        for split in ["validation", "test"]}
+            pos_predictions = average_pos_predictions
+        else:
+            pos_predictions = pos_predictions[0]
 
     for path in rel_paths:
         val_files, val_probabilities, test_files, test_probabilities, test_los_individual, val_files_parsed, test_files_parsed= load_model_probabilities(args, path)
