@@ -1,8 +1,8 @@
 import torch 
 import numpy as np
 import os
-model_name = "pos_adaptive"
-results_path = "/home/jovyan/pos_lm_v2/checkpoints/0527_140645/results"
+model_name = "AdaptiveInputsMine"
+results_path = "../pos_lm_v2/checkpoints/adaptive_lm_wiki103.v2/results/xpos"
 data_lens = {"validation": 217646, "test": 245569}
 splits = ["validation", "test"]
 probs = {

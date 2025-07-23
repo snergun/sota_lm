@@ -101,7 +101,7 @@ def load_model_probabilities(args, path):
         test_los_individual.append(calculate_sequence_loss(i)[1])
         print(name + ": " + str(round(calculate_sequence_loss(i)[1], 2)))
 
-    return val_files, val_probabilities, test_files, test_probabilities, test_los_individual
+    return val_files, val_probabilities, test_files, test_probabilities, test_los_individual, val_files_parsed, test_files_parsed
 
 if __name__ == "__main__":
     args = parse_args()
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         pos_predictions = load_pos_predictions(len(pos_dict), args.pos_prob_path)
 
     for path in rel_paths:
-        val_files, val_probabilities, test_files, test_probabilities, test_los_individual = load_model_probabilities(args, path)
+        val_files, val_probabilities, test_files, test_probabilities, test_los_individual, val_files_parsed, test_files_parsed= load_model_probabilities(args, path)
         print("\nIndividual valid ppl of models")
         for name, i in zip(val_files, val_probabilities):
             # skip unigram cache
@@ -165,28 +165,29 @@ if __name__ == "__main__":
                                                 pos_predictions=pos_predictions["test"])
             print('POS Weighted Validation Perplexity using Predicted POS: ', math.exp(val_pos_weighted_loss_pred))
             print('POS Weighted Test Perplexity using Predicted POS: ', math.exp(test_pos_weighted_loss_pred))
-        else:
-            weights = optimise_ensemble_weights(val_probabilities)
 
-            val_file_prob = (weights[:, np.newaxis] * val_probabilities).sum(axis=0)
-            test_file_prob = (weights[:, np.newaxis] * test_probabilities).sum(axis=0)
+        print("\nEnsembled results (single weight per model)")
+        weights = optimise_ensemble_weights(val_probabilities)
 
-            val_loss, val_ppl = calculate_sequence_loss(val_file_prob)
-            test_loss, test_ppl = calculate_sequence_loss(test_file_prob)
-            test_los_individual.append(test_ppl)
+        val_file_prob = (weights[:, np.newaxis] * val_probabilities).sum(axis=0)
+        test_file_prob = (weights[:, np.newaxis] * test_probabilities).sum(axis=0)
 
-            print('\nValidation Perplexity: ', val_ppl)
-            print('Test Perplexity: ', test_ppl)
+        val_loss, val_ppl = calculate_sequence_loss(val_file_prob)
+        test_loss, test_ppl = calculate_sequence_loss(test_file_prob)
+        test_los_individual.append(test_ppl)
 
-            print("\nName of files with weights")
-            for name, w in zip(test_files_parsed, weights):
-                print(name + ': ' + str(round(w, 2)))
+        print('\nValidation Perplexity: ', val_ppl)
+        print('Test Perplexity: ', test_ppl)
 
-            df_line = pd.DataFrame(list(zip(test_files_parsed+['Ensemble of All'], test_los_individual)),
-                                columns=['Model', 'Perplexity'])
-            df_line = df_line.sort_values(by=['Perplexity'], ascending=False)
+        print("\nName of files with weights")
+        for name, w in zip(test_files_parsed, weights):
+            print(name + ': ' + str(round(w, 2)))
 
-            df_pie = pd.DataFrame(list(zip(test_files_parsed, weights)),
-                            columns=['Model', 'Weight'])
+        df_line = pd.DataFrame(list(zip(test_files_parsed+['Ensemble of All'], test_los_individual)),
+                            columns=['Model', 'Perplexity'])
+        df_line = df_line.sort_values(by=['Perplexity'], ascending=False)
 
-            plot_cumulative_state(df_line, df_pie, "index.html", path)
+        df_pie = pd.DataFrame(list(zip(test_files_parsed, weights)),
+                        columns=['Model', 'Weight'])
+
+        plot_cumulative_state(df_line, df_pie, "index.html", path)

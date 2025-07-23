@@ -138,6 +138,8 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
         print(f"Using first {train_val_split*100}% of data for training, rest for validation")
     cut_index = int(probabilities.shape[1] * train_val_split) if train_val_split is not None else probabilities.shape[1]
     scaled_weights = None
+    best_val_loss = float('inf')
+    iter_without_improvement = 0
     for t in range(num_steps):
         # Forward pass
         loss = model(probabilities[:,:cut_index], pos_tokens, pos_predictions[:cut_index] if pos_predictions is not None else None)
@@ -151,11 +153,18 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
             scaled_weights = torch.softmax(model.weights, dim=0).detach().numpy()
             if train_val_split is not None:
                 val_loss = model(probabilities[:,cut_index:], pos_tokens, pos_predictions[cut_index:] if pos_predictions is not None else None)
+                if best_val_loss - val_loss > 1e-4:
+                    best_val_loss = val_loss
+                    iter_without_improvement = 0
+                else:
+                    iter_without_improvement += 1
                 val_ppl = torch.exp(val_loss)
                 print(f'Step {t}: Train Loss: {loss.item():.4f}, Train Perplexity: {ppl.item():.4f} | Val Loss: {val_loss.item():.4f}, Val Perplexity: {val_ppl.item():.4f}')
             else:
                 print('Loss:', loss.item(), 'Perplexity:', ppl.item())
-
+        if iter_without_improvement >= 5:
+            print("Early stopping due to no improvement in validation loss")
+            break
     return model, scaled_weights
 
 def tabulate_data(table, model_names, emphasize=None):
