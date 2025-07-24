@@ -126,7 +126,7 @@ def calculate_sequence_loss_per_pos(x, pos_tokens, pos_dict):
         pos_losses[pos_word] = (loss, ppl)
     return pos_losses
 
-def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, num_steps: int = 5000, pos_tokens = None, pos_predictions=None, train_val_split=None):
+def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, num_steps: int = 5000, pos_tokens = None, pos_predictions=None, train_val_split=None, use_correct_pos=False):
     """    
     Find optimal linear weights for the ensemble model given the word probabilities for each model.
     """
@@ -140,9 +140,14 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
     scaled_weights = None
     best_val_loss = float('inf')
     iter_without_improvement = 0
+    using_pos_predictions = pos_predictions is not None and not use_correct_pos
+    if using_pos_predictions:
+        print("Using predicted POS tags for training")
+    else:
+        print("Using correct POS tags for training")
     for t in range(num_steps):
         # Forward pass
-        loss = model(probabilities[:,:cut_index], pos_tokens, pos_predictions[:cut_index] if pos_predictions is not None else None)
+        loss = model(probabilities[:,:cut_index], pos_tokens, pos_predictions[:cut_index] if using_pos_predictions else None)
         # Zero gradients, perform a backward pass, and update the weights.
         optimizer.zero_grad()
         loss.backward()
@@ -152,7 +157,7 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
             ppl = torch.exp(loss)
             scaled_weights = torch.softmax(model.weights, dim=0).detach().numpy()
             if train_val_split is not None:
-                val_loss = model(probabilities[:,cut_index:], pos_tokens, pos_predictions[cut_index:] if pos_predictions is not None else None)
+                val_loss = model(probabilities[:,cut_index:], pos_tokens, pos_predictions[cut_index:] if using_pos_predictions else None)
                 if best_val_loss - val_loss > 1e-4:
                     best_val_loss = val_loss
                     iter_without_improvement = 0

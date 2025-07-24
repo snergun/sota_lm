@@ -6,9 +6,10 @@ import os
 import argparse
 from utils import *
 from pos_lm.data.dictionary import Dictionary
-from pos_lm.data.utils import load_tokens_from_lines
+from pos_lm.data.utils import load_tokens_from_lines, load_pos_tokens_using_cluster
 from tabulate import tabulate
 from pos_lm.utils import find_optimal_weights
+
 import math
 
 def parse_args():
@@ -18,8 +19,9 @@ def parse_args():
     parser.add_argument("--models-all-but", nargs='+', default=[], help="List of model names to exclude from ensemble")
     parser.add_argument("--weigh-by-pos", type=str, default=None, choices=["xpos", "upos"], help="Use POS tags to weigh the models")
     parser.add_argument("--pos-prob-path", type=str, nargs='+', default=[], help="Path to the POS probabilities")
-    parser.add_argument("--train-with-predictions", action='store_true', help="Train with predicted POS tags instead of gold POS tags")
+    parser.add_argument("--train-using-correct-pos", action='store_true', help="Train with correct POS tags instead of predicted POS tags")
     parser.add_argument("--train-val-split", type=float, default=None, help="Fraction of data to use for training when optimizing weights by POS tags")
+    parser.add_argument("--data-dir", type=str, default="data/wikitext-103-stanza", help="Directory containing the dataset")
     return parser.parse_args()
 
 def plot_cumulative_state(df_line: pd.DataFrame, df_pie: pd.DataFrame, outfile: str, dataset_name: str):
@@ -41,14 +43,14 @@ def plot_cumulative_state(df_line: pd.DataFrame, df_pie: pd.DataFrame, outfile: 
         f.write(fig_line_chart.to_html(full_html=False, include_plotlyjs='cdn', default_height="70%", default_width="70%"))
         f.write(fig_pie_chart.to_html(full_html=False, include_plotlyjs='cdn',  default_height="70%", default_width="70%"))
 
-def load_pos_tags(pos_name: str = None):
+def load_pos_tags(pos_name: str = None, data_dir: str = None):
     # Load pos dictionary
-    pos_dict = Dictionary(path = f"../pos_lm_v2/data/wikitext-103-stanza/{pos_name}_vocab.json")
+    pos_dict = Dictionary(path = os.path.join(data_dir, f"{pos_name}_vocab.json"))
 
     # Load pos_tokens
-    pos_tokens = {split: load_tokens_from_lines(f"../pos_lm_v2/data/wikitext-103-stanza/{split}/{pos_name}", pos_dict.eos_index)[1:] \
+    pos_tokens = {split: load_tokens_from_lines(os.path.join(data_dir, split, pos_name), pos_dict.eos_index)[1:] \
         for split in ["validation", "test"]}
-
+       
     return pos_dict, pos_tokens
 
 def load_pos_predictions(num_pos, pos_prob_path: str = None):
@@ -137,7 +139,12 @@ if __name__ == "__main__":
 
     if args.weigh_by_pos:
         # Load POS tags and dictionary
-        pos_dict, pos_tokens = load_pos_tags(args.weigh_by_pos)
+        if args.pos_clusters_path is None:
+            pos_dict, pos_tokens = load_pos_tags(args.weigh_by_pos, args.data_dir)
+        else: # Load POS tokens using clusters
+            word_dict = Dictionary(path=os.path.join(args.data_dir, "vocab.json"))
+            tokens = load_tokens_from_lines(os.path.join(args.data_dir, "validation", "txt"), word_dict.eos_index)
+            pos_dict, pos_tokens = load_pos_tokens_using_cluster(args.pos_clusters_path, word_dict, args.weigh_by_pos)
         # Load POS predictions if path is provided
         pos_predictions = []
         for pos_prob_path in args.pos_prob_path:
