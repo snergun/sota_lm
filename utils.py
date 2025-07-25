@@ -3,7 +3,7 @@ import torch
 import os
 from tabulate import tabulate
 import torch.nn.functional as F
-
+from tqdm import tqdm
 class Perplexity_loss(torch.nn.Module):
     def __init__(self, num_models: int):
         """
@@ -63,12 +63,13 @@ def optimise_ensemble_weights(probabilities: np.ndarray, num_steps: int = 5000, 
     """
     Find optimal linear weights for the ensemble model given the word probabilities for each model.
     """
-    probabilities = torch.from_numpy(probabilities)
-    model = Perplexity_loss(probabilities.shape[0])
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    probabilities = torch.from_numpy(probabilities).to(device)
+    model = Perplexity_loss(probabilities.shape[0]).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     scaled_weights = None
-    for t in range(num_steps):
+    for t in tqdm(range(num_steps)):
         # Forward pass
         loss = model(probabilities)
 
@@ -79,7 +80,7 @@ def optimise_ensemble_weights(probabilities: np.ndarray, num_steps: int = 5000, 
 
         if t % 100 == 0:
             ppl = torch.exp(loss)
-            scaled_weights = torch.softmax(model.weights, dim=0).detach().numpy()[:, 0]
+            scaled_weights = torch.softmax(model.weights, dim=0).detach().cpu().numpy()[:, 0]
             # print('Loss:', loss.item(), 'Perplexity:', ppl.item(), 'Weights:', scaled_weights)
 
     return scaled_weights
@@ -130,9 +131,10 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
     """    
     Find optimal linear weights for the ensemble model given the word probabilities for each model.
     """
-    probabilities = torch.from_numpy(probabilities)
-    pos_tokens = torch.tensor(pos_tokens, dtype=torch.long) if pos_tokens is not None else None
-    model = Perplexity_loss_per_POS(probabilities.shape[0], len(pos_dict))
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    probabilities = torch.from_numpy(probabilities).to(device)
+    pos_tokens = torch.tensor(pos_tokens, dtype=torch.long).to(device) if pos_tokens is not None else None
+    model = Perplexity_loss_per_POS(probabilities.shape[0], len(pos_dict)).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     if train_val_split is not None:
         print(f"Using first {train_val_split*100}% of data for training, rest for validation")
@@ -155,7 +157,7 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
 
         if t % 100 == 0:
             ppl = torch.exp(loss)
-            scaled_weights = torch.softmax(model.weights, dim=0).detach().numpy()
+            scaled_weights = torch.softmax(model.weights, dim=0).detach().cpu().numpy()
             if train_val_split is not None:
                 val_loss = model(probabilities[:,cut_index:], pos_tokens, pos_predictions[cut_index:] if using_pos_predictions else None)
                 if best_val_loss - val_loss > 1e-4:
