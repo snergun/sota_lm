@@ -19,6 +19,7 @@ def parse_args():
     parser.add_argument("--models-all-but", nargs='+', default=[], help="List of model names to exclude from ensemble")
     parser.add_argument("--weigh-by-pos", type=str, default=None, choices=["xpos", "upos"], help="Use POS tags to weigh the models")
     parser.add_argument("--pos-prob-path", type=str, nargs='+', default=[], help="Path to the POS probabilities")
+    parser.add_argument("--pos-clusters-path", type=str, default=None, help="Path to the POS clusters for using POS tags")
     parser.add_argument("--train-using-correct-pos", action='store_true', help="Train with correct POS tags instead of predicted POS tags")
     parser.add_argument("--train-val-split", type=float, default=None, help="Fraction of data to use for training when optimizing weights by POS tags")
     parser.add_argument("--data-dir", type=str, default="data/wikitext-103-stanza", help="Directory containing the dataset")
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     if os.path.exists("index.html"):
         os.remove("index.html")
     np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
-
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     # Get dataset paths
     rel_paths = args.dataset
     if isinstance(rel_paths, str):
@@ -143,8 +144,11 @@ if __name__ == "__main__":
             pos_dict, pos_tokens = load_pos_tags(args.weigh_by_pos, args.data_dir)
         else: # Load POS tokens using clusters
             word_dict = Dictionary(path=os.path.join(args.data_dir, "vocab.json"))
-            tokens = load_tokens_from_lines(os.path.join(args.data_dir, "validation", "txt"), word_dict.eos_index)
-            pos_dict, pos_tokens = load_pos_tokens_using_cluster(args.pos_clusters_path, word_dict, args.weigh_by_pos)
+            tokens = {split : torch.tensor(
+                load_tokens_from_lines(os.path.join(args.data_dir, split, "txt"), word_dict.eos_index)[1:],
+                dtype=torch.long)
+                for split in ["validation", "test"]}
+            pos_dict, pos_tokens = load_pos_tokens_using_cluster(args.pos_clusters_path, word_dict, tokens)
         # Load POS predictions if path is provided
         pos_predictions = []
         for pos_prob_path in args.pos_prob_path:
@@ -198,11 +202,11 @@ if __name__ == "__main__":
             print('\nPOS Weighted Validation Perplexity using Correct POS: ', math.exp(val_pos_weighted_loss))
             print('POS Weighted Test Perplexity using Correct POS: ', math.exp(test_pos_weighted_loss))
             val_pos_weighted_loss_pred = model(
-                                                torch.from_numpy(val_probabilities),
-                                                pos_predictions=pos_predictions["validation"])
+                                                torch.from_numpy(val_probabilities).to(device),
+                                                pos_predictions=pos_predictions["validation"].to(device))
             test_pos_weighted_loss_pred = model(
-                                                torch.from_numpy(test_probabilities),
-                                                pos_predictions=pos_predictions["test"])
+                                                torch.from_numpy(test_probabilities).to(device),
+                                                pos_predictions=pos_predictions["test"].to(device))
             print('POS Weighted Validation Perplexity using Predicted POS: ', math.exp(val_pos_weighted_loss_pred))
             print('POS Weighted Test Perplexity using Predicted POS: ', math.exp(test_pos_weighted_loss_pred))
 

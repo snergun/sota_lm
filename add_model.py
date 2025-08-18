@@ -1,8 +1,8 @@
 import torch 
 import numpy as np
 import os
-model_name = "AdaptiveInputsMine"
-results_path = "../pos_lm_v2/checkpoints/adaptive_lm_wiki103.v2/results/xpos"
+model_name = "KNN"
+results_path = "/home/jovyan/pos_lm_v2/data/knn-wiki-cache"
 data_lens = {"validation": 217646, "test": 245569}
 splits = ["validation", "test"]
 probs = {

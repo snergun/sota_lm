@@ -133,6 +133,7 @@ def optimize_ensemble_weights_by_pos(probabilities, pos_dict, lr: float=0.05, nu
     """
     device = "cuda" if torch.cuda.is_available() else "cpu"
     probabilities = torch.from_numpy(probabilities).to(device)
+    pos_predictions = pos_predictions.to(device) if pos_predictions is not None else None
     pos_tokens = torch.tensor(pos_tokens, dtype=torch.long).to(device) if pos_tokens is not None else None
     model = Perplexity_loss_per_POS(probabilities.shape[0], len(pos_dict)).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
