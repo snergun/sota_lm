@@ -271,3 +271,134 @@ KNNLM: 0.53
 MEGA: 0.29
 S4: 0.06
 ShortFormer: 0.09
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNN.txt: inf
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNN.txt: inf
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+Validation Perplexity:  13.644709371425195
+Test Perplexity:  13.715290340119434
+
+Name of files with weights
+AdaptiveInputs: 0.16
+DELIGHT: 0.0
+GCN: 0.0
+KNN: 0.15
+MEGA: 0.37
+S4: 0.11
+ShortFormer: 0.21
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+DELIGHT.txt: 42.77
+GCN.txt: 34.34
+KNN.txt: 4880.49
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+DELIGHT.txt: 44.42
+GCN.txt: 35.81
+KNN.txt: 4903.95
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+Validation Perplexity:  13.644709371425195
+Test Perplexity:  13.715290340119434
+
+Name of files with weights
+AdaptiveInputs: 0.16
+DELIGHT: 0.0
+GCN: 0.0
+KNN: 0.15
+MEGA: 0.37
+S4: 0.11
+ShortFormer: 0.21
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+KNN.txt: 4880.49
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+KNN.txt: 4903.95
+
+Validation Perplexity:  16.180128209625746
+Test Perplexity:  16.21543148463136
+
+Name of files with weights
+AdaptiveInputs: 0.76
+KNN: 0.24
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+KNN.txt: 4880.49
+MEGA.txt: 17.17
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+KNN.txt: 4903.95
+MEGA.txt: 18.09
+
+Validation Perplexity:  14.095990420982124
+Test Perplexity:  14.186827127313835
+
+Name of files with weights
+AdaptiveInputs: 0.32
+KNN: 0.17
+MEGA: 0.52
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputs.txt: 18.15
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+
+Individual test ppl of models
+AdaptiveInputs.txt: 18.86
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+
+Validation Perplexity:  13.23817686426052
+Test Perplexity:  13.421190085602419
+
+Name of files with weights
+AdaptiveInputs: 0.07
+KNNLM: 0.59
+MEGA: 0.34

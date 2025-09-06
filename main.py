@@ -62,9 +62,11 @@ if __name__ == "__main__":
         assert val_files_parsed == test_files_parsed, 'Different names for validation and test files'
 
         val_probabilities = np.vstack(
-            [combine_prob_text(os.path.join(path, 'valid', file_name)) for file_name in val_files])
+            [combine_prob_text(os.path.join(path, 'valid', file_name)).clip(min=1e-30)
+             for file_name in val_files])
         test_probabilities = np.vstack(
-            [combine_prob_text(os.path.join(path, 'test', file_name)) for file_name in test_files])
+            [combine_prob_text(os.path.join(path, 'test', file_name)).clip(min=1e-30)
+             for file_name in test_files])
 
         print("\nIndividual valid ppl of models")
         for name, i in zip(val_files, val_probabilities):

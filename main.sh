@@ -1,3 +1,6 @@
+# python main.py \
+#     --models AdaptiveInputs DELIGHT GCN KNN MEGA S4 ShortFormer \
+#     >> results.txt
 python main.py \
-    --models-all-but ADTPOS my_adt KNNLM_v2 pos_adaptive \
+    --models AdaptiveInputs KNNLM MEGA \
     >> results.txt
