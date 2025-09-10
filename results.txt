@@ -486,3 +486,67 @@ MEGA: 0.27
 S4: 0.04
 ShortFormer: 0.07
 pw_knn_lm: 0.23
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0910_020132.txt: 15.45
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+0910_020132.txt: 15.37
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0910_020132.txt: 15.45
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+0910_020132.txt: 15.37
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0910_020132.txt: 15.45
+KNNLM.txt: 14.39
+MEGA.txt: 17.17
+S4.txt: 20.47
+ShortFormer.txt: 17.47
+
+Individual test ppl of models
+0910_020132.txt: 15.37
+KNNLM.txt: 14.54
+MEGA.txt: 18.09
+S4.txt: 21.14
+ShortFormer.txt: 18.15
+
+Validation Perplexity:  12.918237592973085
+Test Perplexity:  12.991573152748085
+
+Name of files with weights
+0910_020132: 0.21
+KNNLM: 0.39
+MEGA: 0.27
+S4: 0.05
+ShortFormer: 0.08

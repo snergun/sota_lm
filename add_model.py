@@ -1,8 +1,8 @@
 import torch 
 import numpy as np
 import os
-model_name = "pw_knn_lm"
-results_path = "/home/jovyan/pos_lm_v2/notebooks/results/pw_knn_lm_prob"
+model_name = "0910_020132"
+results_path = "../pos_lm_v2/checkpoints/0910_020132/results"
 data_lens = {"validation": 217646, "test": 245569}
 splits = ["validation", "test"]
 # probs = {
