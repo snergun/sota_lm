@@ -591,3 +591,50 @@ Test Perplexity:  17.104186790176247
 Name of files with weights
 AdaptiveInputsMine: 0.55
 my_adt: 0.45
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0911_231128.txt: 13.03
+ADTPOS.txt: 18.01
+GCN.txt: 34.34
+KNNLM.txt: 14.39
+S4.txt: 20.47
+
+Individual test ppl of models
+0911_231128.txt: 12.83
+ADTPOS.txt: 18.86
+GCN.txt: 35.81
+KNNLM.txt: 14.54
+S4.txt: 21.14
+
+Validation Perplexity:  12.539110351025306
+Test Perplexity:  12.416724266051887
+
+Name of files with weights
+0911_231128: 0.65
+ADTPOS: 0.0
+GCN: 0.0
+KNNLM: 0.32
+S4: 0.04
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0911_231128.txt: 13.03
+KNNLM.txt: 14.39
+
+Individual test ppl of models
+0911_231128.txt: 12.83
+KNNLM.txt: 14.54
+
+Validation Perplexity:  12.557338476036852
+Test Perplexity:  12.429951491618224
+
+Name of files with weights
+0911_231128: 0.67
+KNNLM: 0.33
