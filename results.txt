@@ -550,3 +550,44 @@ KNNLM: 0.39
 MEGA: 0.27
 S4: 0.05
 ShortFormer: 0.08
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+ADTPOS.txt: 18.01
+AdaptiveInputsMine.txt: 17.87
+my_adt.txt: 18.81
+
+Individual test ppl of models
+ADTPOS.txt: 18.86
+AdaptiveInputsMine.txt: 18.66
+my_adt.txt: 19.55
+
+Validation Perplexity:  16.393948235140623
+Test Perplexity:  17.031939710509963
+
+Name of files with weights
+ADTPOS: 0.18
+AdaptiveInputsMine: 0.42
+my_adt: 0.4
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputsMine.txt: 17.87
+my_adt.txt: 18.81
+
+Individual test ppl of models
+AdaptiveInputsMine.txt: 18.66
+my_adt.txt: 19.55
+
+Validation Perplexity:  16.45710457336605
+Test Perplexity:  17.104186790176247
+
+Name of files with weights
+AdaptiveInputsMine: 0.55
+my_adt: 0.45

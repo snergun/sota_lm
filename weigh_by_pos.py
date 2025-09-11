@@ -49,7 +49,7 @@ def load_pos_tags(pos_name: str = None, data_dir: str = None):
     pos_dict = Dictionary(path = os.path.join(data_dir, f"{pos_name}_vocab.json"))
 
     # Load pos_tokens
-    pos_tokens = {split: load_tokens_from_lines(os.path.join(data_dir, split, pos_name), pos_dict.eos_index)[1:] \
+    pos_tokens = {split: np.array(np.load(os.path.join(data_dir, split, f"{pos_name}.npy")))[1:] \
         for split in ["validation", "test"]}
        
     return pos_dict, pos_tokens
@@ -72,7 +72,7 @@ def load_pos_predictions(num_pos, pos_prob_path: str = None):
             else:
                 raise FileNotFoundError(f"POS probability file not found in {pos_prob_path} for {split} split.")
             pos_predictions[split] = torch.from_numpy(
-                    np.memmap(os.path.join(pos_prob_path, file_name), shape=(dataset_sizes[split], num_pos), dtype=np.float32)
+                    np.array(np.load(os.path.join(pos_prob_path, file_name)))
                     )
             if file_name.endswith("full_prob.npy"):
                 pos_predictions[split] = pos_predictions[split].exp()
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         else: # Load POS tokens using clusters
             word_dict = Dictionary(path=os.path.join(args.data_dir, "vocab.json"))
             tokens = {split : torch.tensor(
-                load_tokens_from_lines(os.path.join(args.data_dir, split, "txt"), word_dict.eos_index)[1:],
+                np.array(np.load(os.path.join(args.data_dir, split, "txt.npy")))[1:],
                 dtype=torch.long)
                 for split in ["validation", "test"]}
             pos_dict, pos_tokens = load_pos_tokens_using_cluster(args.pos_clusters_path, word_dict, tokens)
