@@ -638,3 +638,63 @@ Test Perplexity:  12.429951491618224
 Name of files with weights
 0911_231128: 0.67
 KNNLM: 0.33
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+AdaptiveInputsMine.txt: 17.87
+KNN.txt: 4880.49
+pw_knn_lm.txt: 15.42
+
+Individual test ppl of models
+AdaptiveInputsMine.txt: 18.66
+KNN.txt: 4903.95
+pw_knn_lm.txt: 15.23
+
+Validation Perplexity:  15.38639001102148
+Test Perplexity:  15.218357976745244
+
+Name of files with weights
+AdaptiveInputsMine: 0.07
+KNN: 0.03
+pw_knn_lm: 0.9
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+KNNLM_bins.txt: 15.63
+pw_knn_lm.txt: 15.42
+
+Individual test ppl of models
+KNNLM_bins.txt: 15.47
+pw_knn_lm.txt: 15.23
+
+Validation Perplexity:  15.321108680513682
+Test Perplexity:  15.143332311336923
+
+Name of files with weights
+KNNLM_bins: 0.31
+pw_knn_lm: 0.69
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0912_020826.txt: 15.33
+KNNLM_bins.txt: 15.63
+
+Individual test ppl of models
+0912_020826.txt: 15.15
+KNNLM_bins.txt: 15.47
+
+Validation Perplexity:  15.293374342597557
+Test Perplexity:  15.114190057293378
+
+Name of files with weights
+0912_020826: 0.8
+KNNLM_bins: 0.2
