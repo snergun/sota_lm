@@ -1,8 +1,8 @@
 import torch 
 import numpy as np
 import os
-model_name = "0912_020826"
-results_path = "../pos_lm_v2/checkpoints/0912_020826/results"
+model_name = "model_3"
+results_path = "../pos_lm_v2/checkpoints/temperature/absolute_10pieces_0925_110157/model_3"
 data_lens = {"validation": 217646, "test": 245569}
 splits = ["validation", "test"]
 # probs = {

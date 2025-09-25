@@ -698,3 +698,62 @@ Test Perplexity:  15.114190057293378
 Name of files with weights
 0912_020826: 0.8
 KNNLM_bins: 0.2
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0925_091749.txt: 12.93
+KNNLM.txt: 14.39
+
+Individual test ppl of models
+0925_091749.txt: 12.74
+KNNLM.txt: 14.54
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+0925_091749.txt: 12.93
+KNNLM.txt: 14.39
+
+Individual test ppl of models
+0925_091749.txt: 12.74
+KNNLM.txt: 14.54
+
+Validation Perplexity:  12.518603577467566
+Test Perplexity:  12.393403394914142
+
+Name of files with weights
+0925_091749: 0.69
+KNNLM: 0.31
+
+--------------------------------------------------
+
+WikiText-103
+
+Individual valid ppl of models
+KNNLM.txt: 14.39
+model_0.txt: 18.15
+model_1.txt: 16.79
+model_2.txt: 17.43
+model_3.txt: 4024.47
+
+Individual test ppl of models
+KNNLM.txt: 14.54
+model_0.txt: 18.96
+model_1.txt: 17.61
+model_2.txt: 18.09
+model_3.txt: 4010.63
+
+Validation Perplexity:  12.986379579637891
+Test Perplexity:  13.062693064873992
+
+Name of files with weights
+KNNLM: 0.43
+model_0: 0.07
+model_1: 0.3
+model_2: 0.11
+model_3: 0.09
